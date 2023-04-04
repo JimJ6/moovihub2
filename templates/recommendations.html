@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% set title = "Recommendations" %}
+{% set active_page = "recommendations" %}
+
+{% block content%}
+
+  
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+      
+    {% for category, message in messages %}
+
+    <div class=" message {{ category }}"><p><img src="{{ url_for('static', filename='/icons/' + category + '.svg') }}" alt="">{{ message }}</p><img onclick="this.parentElement.style.display='none'" class="close-button" src="{{ url_for('static', filename='/icons/cancel.svg') }}" alt=""></div>
+    {% endfor %}
+      
+  {% endif %}
+{% endwith %}
+<h1 class="page-heading">Recommended Movies for You</h1>
+
+{% if recommendations %}
+
+
+<div class="movie-gallery">
+
+  {% for movie in recommendations %}
+
+    {% if movie['id'] not in watched_movies %}
+  
+      {% if movie['poster_path'] %}
+        <a href="{{ url_for('movie_info', movie_id = movie['id'])}}">
+          <div class="poster-container">
+            <img loading="lazy" class="poster" src="https://image.tmdb.org/t/p/original{{ movie['poster_path'] }}" alt="">
+        </div>
+        </a>
+      {% endif %}
+
+    {% endif %} 
+
+  {% endfor %}
+
+</div>
+{% else %}
+<h1 class="no-movies-heading">You need to rate more movies to get recommendations!</h1>
+{% endif %}
+
+<script>
+  // close icon on flash messages
+  closeButton.addEventListener("click", function(){
+
+    document.querySelector(".message").style.display = "none";
+
+  })
+</script>
+
+{% endblock %}

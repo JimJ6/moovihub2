@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+{% set title = "My Stats" %}
+{% set active_page = "stats" %}
+
+{% block content%}
+<h1 class="page-heading">My Statistics</h1>
+<div id="stats-wrapper">
+
+    <!-- Container for Stat Tiles -->
+    <div id="stats-container">
+
+      <div class="stat-container">
+        <h3>Total Watched</h3>
+        <p>{{ total_movies }}</p>
+      </div>
+  
+      <div id="watched-time" class="stat-container">
+        <h3>Total Watch Time</h3>
+        <p>{{ days }} days {{ hours }} hrs {{ minutes }} mins</p>
+      </div>
+  
+      <div class="stat-container">
+        <h3>Total Ratings</h3>
+        <p>{{ total_ratings }}</p>
+      </div>
+  
+      <div class="stat-container">
+        <h3>Average Rating</h3>
+        {% if average_rating > 0 %}
+        <p><img src="{{ url_for('static', filename='icons/rating_icons/rating_' + average_rating|string + '.svg')}}" alt=""></p>
+        <p><span>{{ rating_descriptions[average_rating|string] }}</span></p>
+        {% else %}
+        <p>No movies rated yet</p>
+        {% endif %}
+        
+      </div>
+
+    </div>
+    <!-- ^^ end of 'stats-container' -->
+
+    <!-- Container for Chart Tiles -->
+    <div id="charts-container">
+
+
+    <div class="chart-container">
+      <h3>Top 5 Actors</h3>
+      <div class="chart-wrapper">
+      <canvas id="actorsChart"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <h3>Top 5 Directors</h3>
+      <canvas id="directorsChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <h3>Top 5 Genres</h3>
+      <canvas id="genresChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <h3>Top 5 Years</h3>
+      <canvas id="yearsChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <h3>Movies by Decade</h3>
+      <canvas id="decadesChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+      <h3>Most Rated Aspects</h3>
+      <canvas id="aspectsChart"></canvas>
+    </div>
+    
+  </div>
+  <!-- ^^ end of 'charts-container' -->
+
+</div>
+
+
+
+
+
+<script>
+
+Chart.defaults.global = {
+    font: {
+      family: 'Roboto',
+    },
+};
+
+// TOP 5 ACTORS BAR CHART
+let actorsChart = document.getElementById('actorsChart').getContext('2d');
+
+let actorsBarChart = new Chart(actorsChart, {
+  type:'bar',
+  data: {
+    labels: {{ actors_labels | safe }},
+    datasets: [{
+      label: 'Total Movies',
+      data: {{ actors_data | safe }},
+      backgroundColor: ['#27183A', '#573681', '#8D2A64', '#FF8C42', '#FFD60A'],
+    }],
+  },
+});
+
+// TOP 5 DIRECTORS BAR CHART
+let directorsChart = document.getElementById('directorsChart').getContext('2d');
+
+let directorsBarChart = new Chart(directorsChart, {
+  type:'bar',
+  data: {
+    labels: {{ directors_labels | safe }},
+    datasets: [{
+      label: 'Movies Directed',
+      data: {{ directors_data | safe }},
+      backgroundColor: ['#27183A', '#573681', '#8D2A64', '#FF8C42', '#FFD60A'],
+    }],
+  },
+});
+
+
+// TOP 5 GENRES DOUGHNUT CHART
+let genresChart = document.getElementById('genresChart').getContext('2d');
+
+let genresDoughnutChart = new Chart(genresChart, {
+  type:'doughnut',
+  data: {
+    labels: {{ genres_labels | safe }},
+    datasets: [{
+      label: 'Movie Count',
+      data: {{ genres_data | safe }},
+      backgroundColor: ['#27183A', '#573681', '#8D2A64', '#FF8C42', '#FFD60A'],
+    }],
+  },
+});
+
+// TOP 5 YEARS POLAR AREA CHART
+let yearsChart = document.getElementById('yearsChart').getContext('2d');
+
+let yearsBarChart = new Chart(yearsChart, {
+  type:'bar',
+  data: {
+    labels: {{ years_labels | safe }},
+    datasets: [{
+      label: 'Movie Count',
+      data: {{ years_data | safe }},
+      backgroundColor: ['#27183A', '#573681', '#8D2A64', '#FF8C42', '#FFD60A'],
+    }],
+  },
+});
+
+
+// DECADE DISTRIBUTION LINE CHART
+let decadesChart = document.getElementById('decadesChart').getContext('2d');
+
+let decadesLineChart = new Chart(decadesChart, {
+  type:'line',
+  data: {
+    labels: {{ decades_labels | safe }},
+    datasets: [{
+      label: 'Movie Count',
+      data: {{ decades_data | safe }},
+      backgroundColor: '#27183A',
+    }],
+  },
+});
+
+
+// LIKED RATING ASPECTS RADAR CHART
+let aspectsChart = document.getElementById('aspectsChart').getContext('2d');
+
+let aspectsRadarChart = new Chart(aspectsChart, {
+  type:'radar',
+  data: {
+    labels: {{ rating_aspects_labels | safe }},
+    datasets: [{
+      label: 'Rating Count',
+      data: {{ rating_aspects_data | safe }},
+      backgroundColor: '#8D2A64',
+    }],
+  },
+});
+
+
+
+
+
+</script>
+{% endblock %}

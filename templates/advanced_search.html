@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+{% set title = "Search for Movies" %}
+{% set active_page = "search" %}
+{% set selected_page = "advanced search" %}
+
+{% block content %}
+
+
+
+  <div id="search-header-links">
+    <a href="{{ url_for('search')}}" class="search-header-link {{ 'selected' if selected_page == 'search' }}">Search by Title</a>
+    <a href="{{ url_for('advanced_search')}}" class="search-header-link {{ 'selected' if selected_page == 'advanced search' }}">Advanced Search</a>
+  </div>
+
+  <h1 class="page-heading">Advanced Search</h1>
+
+  <div id="advanced-search-form-wrapper">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      
+        {% for category, message in messages %}
+
+          
+          <div class=" message {{ category }}"><p><img src="{{ url_for('static', filename='/icons/' + category + '.svg') }}" alt="">{{ message }}</p><img onclick="this.parentElement.style.display='none'" class="close-button" src="{{ url_for('static', filename='/icons/cancel.svg') }}" alt=""></div>
+          
+            
+        {% endfor %}
+      
+      {% endif %}
+    {% endwith %}
+
+    
+
+    <form method="POST">
+      <div id="sort-wrapper">
+        <label for="sort">Sort by:</label>
+
+        <select name="sort" id="sort">
+          <option value="popularity.desc" {% if sort_by == "popularity.desc" %} selected {% endif %}>Most Popular</option>
+          <option value="vote_average.desc" {% if sort_by == "vote_average.desc" %} selected {% endif %}>Highest Rated</option>
+        </select>
+
+       
+      </div>
+
+        <!-- Year range slider container -->
+        <div id="year-slider-container">
+
+          <p>Year: <span id="slider-value"></span></p>
+          <input type="range" name="year" min="1930" max="2021" value={{ year }} class="slider" id="year-slider">
+        </div>
+        
+
+        <!-- Div ontainer for genre checkbox inputs and labels and spans -->
+        <div id="genres-container">
+
+          <label for="action">
+            <input type="checkbox" name="genre" id="action" value="28" {% if "28" in genres_checked %} checked {% endif %}>
+            <span>Action</span>
+          </label>
+
+          <label for="adventure">
+            <input type="checkbox" name="genre" id="adventure" value="12" {% if "12" in genres_checked %} checked {% endif %}>
+            <span>Adventure</span>
+          </label>
+
+          <label for="animation">
+            <input type="checkbox" name="genre" id="animation" value="16" {% if "16" in genres_checked %} checked {% endif %}>
+            <span>Animation</span>
+          </label>
+
+          <label for="comedy">
+            <input type="checkbox" name="genre" id="comedy" value="35" {% if "35" in genres_checked %} checked {% endif %}>
+            <span>Comedy</span>
+          </label>
+
+          <label for="crime">
+            <input type="checkbox" name="genre" id="crime" value="80" {% if "80" in genres_checked %} checked {% endif %}>
+            <span>Crime</span>
+          </label>
+
+          <label for="documentary">
+            <input type="checkbox" name="genre" id="documentary" value="99" {% if "99" in genres_checked %} checked {% endif %}>
+            <span>Documentary</span>
+          </label>
+
+          <label for="drama">
+            <input type="checkbox" name="genre" id="drama" value="18" {% if "18" in genres_checked %} checked {% endif %}>
+            <span>Drama</span>
+          </label>
+
+          <label for="family">
+            <input type="checkbox" name="genre" id="family" value="10751" {% if "10751" in genres_checked %} checked {% endif %}>
+            <span>Family</span>
+          </label>
+
+          <label for="fantasy">
+            <input type="checkbox" name="genre" id="fantasy" value="14" {% if "14" in genres_checked %} checked {% endif %}>
+            <span>Fantasy</span>
+          </label>
+
+          <label for="history">
+            <input type="checkbox" name="genre" id="history" value="36" {% if "36" in genres_checked %} checked {% endif %}>
+            <span>History</span>
+          </label>
+
+          <label for="horror">
+            <input type="checkbox" name="genre" id="horror" value="27" {% if "27" in genres_checked %} checked {% endif %}>
+            <span>Horror</span>
+          </label>
+
+          <label for="music">
+            <input type="checkbox" name="genre" id="music" value="10402" {% if "10402" in genres_checked %} checked {% endif %}>
+            <span>Music</span>
+          </label>
+
+          <label for="mystery">
+            <input type="checkbox" name="genre" id="mystery" value="9648" {% if "9648" in genres_checked %} checked {% endif %}>
+            <span>Mystery</span>
+          </label>
+
+          <label for="romance">
+            <input type="checkbox" name="genre" id="romance" value="10749" {% if "10749" in genres_checked %} checked {% endif %}>
+            <span>Romance</span>
+          </label>
+
+          <label for="science-fiction">
+            <input type="checkbox" name="genre" id="science-fiction" value="878" {% if "878" in genres_checked %} checked {% endif %}>
+            <span>Science Fiction</span>
+          </label>
+
+          <label for="thriller">
+            <input type="checkbox" name="genre" id="thriller" value="53" {% if "53" in genres_checked %} checked {% endif %}>
+            <span>Thriller</span>
+          </label>
+
+          <label for="war">
+            <input type="checkbox" name="genre" id="war" value="10752" {% if "10752" in genres_checked %} checked {% endif %}>
+            <span>War</span>
+          </label>
+
+          <label for="western">
+            <input type="checkbox" name="genre" id="western" value="37" {% if "37" in genres_checked %} checked {% endif %}>
+            <span>Western</span>
+          </label>
+
+        
+      </div>
+
+      <input type="submit" value="Search">
+    </form>
+
+  </div>
+
+  {% if no_results %}
+  <h1 class="advanced-search-h1">Sorry, we couldn't find any movies matching your query!</h1>
+  {% endif %}
+  
+  {% if movie_results %}
+
+  <h1 class="advanced-search-h1">We found {{ results_total }} movies matching your query...</h1>
+
+  <div class="movie-gallery">
+
+    {% for movie in movie_results %}
+    
+      {% if movie['poster_path'] %}
+        <a href="{{ url_for('movie_info', movie_id = movie['id'])}}">
+          <div class="poster-container">
+            <img loading="lazy" class="poster" src="https://image.tmdb.org/t/p/original{{ movie['poster_path'] }}" alt="">
+          </div>
+        
+      {% endif %}
+
+    {% endfor %}
+
+  {% endif %}
+
+  </div>
+  
+  <script>
+
+    // Year range slider display current value 
+    const slider = document.getElementById("year-slider");
+    const output = document.getElementById("slider-value");
+    output.innerHTML = slider.value;
+
+    slider.oninput = function() {
+      output.innerHTML = this.value;
+    }
+
+    
+
+  </script>
+  
+  
+
+{% endblock %}

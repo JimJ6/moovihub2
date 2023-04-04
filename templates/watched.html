@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% set title = "Watched Movies" %}
+{% set active_page = "watched" %}
+
+{% block content%}
+
+  
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+      
+    {% for category, message in messages %}
+
+      
+        <div class=" message {{ category }}"><p><img src="{{ url_for('static', filename='/icons/' + category + '.svg') }}" alt="">{{ message }}</p><img onclick="this.parentElement.style.display='none'" class="close-button" src="{{ url_for('static', filename='/icons/cancel.svg') }}" alt=""></div>
+     
+      
+    {% endfor %}
+      
+  {% endif %}
+{% endwith %}
+
+
+{% if watched_movies %}
+<h1 class="page-heading">My Watched Movies</h1>
+<div id="watched-sort">
+  <form method="POST">
+    <label for="sort">Sort by:</label>
+        <select name="sort" id="sort">
+          <option value="date" {% if sort == "date" %} selected {% endif %}>Date Added</option>
+          <option value="rating" {% if sort == "rating" %} selected {% endif %}>Rating</option>
+        </select>
+        <input type="submit" value="Submit">
+  </form>
+</div>
+<div class="movie-gallery">
+
+  {% for movie in watched_movies %}
+  
+    
+      
+        <div class="poster-container">
+          
+          <div class="watched-overlay"></div>
+          
+          {% if movie['rating_score'] %}
+          <img class="watched_rating" src="{{ url_for('static', filename='icons/rating_icons/rating_' + movie['rating_score']|string + '.svg')}}" alt="emoji face icon">
+          {% endif %}
+          <a class="info-link" href="{{ url_for('movie_info', movie_id = movie['movie_id'])}}">
+            <img src="{{ url_for('static', filename='icons/info.svg')}}" alt="info icon to movie['title'] info page">
+          </a>
+          <div class="remove-btn" >
+            
+            <img src="{{ url_for('static', filename='icons/delete.svg')}}" alt="trash can delete icon">
+          </div>
+          <img class="poster" src="https://image.tmdb.org/t/p/original{{ movie['poster_path'] }}" alt="movie['title'] poster">
+        </div>
+
+        <div class="delete-modal-container">
+          
+          <div class="delete-modal-content">
+            <div class="delete-modal-poster">
+              <img src="https://image.tmdb.org/t/p/original{{ movie['poster_path'] }}" alt="movie['title'] poster">
+            </div>
+            <h3>{{movie['movie_title']}}</h3>
+            <p>Are you sure you want to remove this movie?</p>
+            <div class="delete-modal-buttons">
+              <a class="delete-modal-btn" href="{{ url_for('remove_from_watched', movie_id = movie['movie_id'])}}">Remove</a>
+              <button class="delete-modal-btn close-modal" >Cancel</button>
+            </div>
+            
+          </div>
+        </div>
+
+        
+
+      
+      
+      
+{% endfor %}
+
+</div>
+{% else %}
+<h1 class="no-movies-heading">Start marking movies as watched <img src="{{ url_for('static', filename='icons/info_icons/not_watched.svg')}}" alt=""> and view your current list here!</h1>
+{% endif %}
+
+<script>
+  
+
+
+  // Delete Modal
+  
+  const removeButtons = document.getElementsByClassName('remove-btn');
+  const modalCloseButtons = document.getElementsByClassName('close-modal');
+  
+    
+    
+    function openModal(event){
+      let target = event.currentTarget
+      target.parentElement.nextElementSibling.style.display = 'flex';
+    }
+
+    for (let i = 0; i < removeButtons.length; i++) {
+      removeButtons[i].addEventListener('click', openModal, false);
+    }
+
+    function closeModal(event){
+      let target = event.currentTarget
+      target.parentElement.parentElement.parentElement.style.display = 'none';
+    }
+
+    for (let i = 0; i < modalCloseButtons.length; i++) {
+      modalCloseButtons[i].addEventListener('click', closeModal, false);
+    }
+
+    
+    
+    
+
+</script>
+
+{% endblock %}

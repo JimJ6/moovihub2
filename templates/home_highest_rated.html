@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% set title = "Home" %}
+{% set active_page = "home" %}
+{% set selected_page = "highest rated" %}
+
+{% block content%}
+
+  
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+      
+    {% for category, message in messages %}
+
+    <div class=" message {{ category }}"><p><img src="{{ url_for('static', filename='/icons/' + category + '.svg') }}" alt="">{{ message }}</p><img onclick="this.parentElement.style.display='none'" class="close-button" src="{{ url_for('static', filename='/icons/cancel.svg') }}" alt=""></div>
+    {% endfor %}
+      
+  {% endif %}
+{% endwith %}
+
+
+<div id="home-header-links">
+  <a href="{{ url_for('home')}}" class="home-header-link">New Releases</a>
+  <a href="{{ url_for('home_popular')}}" class="home-header-link">Popular</a>
+  <a href="{{ url_for('home_highest_rated')}}" class="home-header-link {{ 'selected' if selected_page == 'highest rated' }}">Highest Rated</a>
+</div>
+
+<h1 class="page-heading">Highest Rated Movies</h1>
+
+<div class="movie-gallery">
+
+  {% for movie in highest_rated_movies %}
+  
+    {% if movie['poster_path'] %}
+      <a href="{{ url_for('movie_info', movie_id = movie['id'])}}">
+        <div class="poster-container">
+          <img  loading="lazy" class="poster" src="https://image.tmdb.org/t/p/original{{ movie['poster_path'] }}" alt="{{ movie['title'] }} poster link to info page">
+        </div>
+      </a>
+      
+    {% endif %}
+
+{% endfor %}
+
+</div>
+
+
+<script>
+  // close icon on flash messages
+  closeButton.addEventListener("click", function(){
+
+    document.querySelector(".message").style.display = "none";
+
+  })
+</script>
+
+{% endblock %}

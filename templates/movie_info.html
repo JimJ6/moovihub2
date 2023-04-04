@@ -1,0 +1,479 @@
+{% extends 'base.html' %}
+{% set title = movie_details['title'] %}
+
+{% block content%}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+      
+    {% for category, message in messages %}
+
+      
+        <div class=" info-page-message message {{ category }}"><p><img src="{{ url_for('static', filename='/icons/' + category + '.svg') }}" alt="">{{ message }}</p><img onclick="this.parentElement.style.display='none'" class="close-button" src="{{ url_for('static', filename='/icons/cancel.svg') }}" alt=""></div>
+    
+    {% endfor %}
+      
+  {% endif %}
+{% endwith %}
+
+  {% if movie_details['backdrop_path'] %}
+  <div class="backdrop">
+    <img src="https://image.tmdb.org/t/p/original{{ movie_details['backdrop_path'] }}"  alt="">
+  </div>
+  
+  {% else %}
+
+  <div class="backdrop no-backdrop-path">
+    <img  src="{{ url_for('static', filename='images/index-hero.jpg')}}" alt="">
+  </div>
+  
+  {% endif %}
+  <div id="movie-content-wrapper">
+
+    <div id="poster-links-wrapper">
+      <img id="info-poster" src="https://image.tmdb.org/t/p/original{{ movie_details['poster_path'] }}"  alt="">
+      <div id="info-page-icons">
+
+        <!-- Check if current movie is in watched_movies -->
+
+        {% if watched_movies %}
+
+          {% if movie_details['id'] in watched_movies %}
+
+            <img id="seen-icon" src="{{ url_for('static', filename='icons/info_icons/watched.svg')}}" alt="">
+            
+          {% else %}
+
+            <form class="watched_form" method='POST'>
+              <input type="hidden" name="movie_id" value="{{ movie_details['id']}}">
+              <input type="hidden" name="movie_title" value="{{ movie_details['title']}}">
+              <input type="hidden" name="poster_path" value="{{ movie_details['poster_path']}}">
+              <input type="hidden" name="movie_directors" value="{{ directed_by }}">
+              <input type="hidden" name="movie_cast" value="{{ watched_cast }}">
+              <input type="hidden" name="movie_genres" value="{{ watched_genres }}">
+              <input type="hidden" name="movie_runtime" value="{{ watched_runtime }}">
+              <input type="hidden" name="movie_release_date" value="{{ watched_release_date }}">
+              <input type="hidden" name="watched" value="">
+              <button type="submit"><img src="{{ url_for('static', filename='icons/info_icons/not_watched.svg')}}" alt=""><span class="tooltip">Add to Watched</span></button>
+            </form>
+
+          {% endif %}
+
+        {% else %}
+
+            <form class="watched_form" method='POST'>
+              <input type="hidden" name="movie_id" value="{{ movie_details['id']}}">
+              <input type="hidden" name="movie_title" value="{{ movie_details['title']}}">
+              <input type="hidden" name="poster_path" value="{{ movie_details['poster_path']}}">
+              <input type="hidden" name="movie_directors" value="{{ directed_by }}">
+              <input type="hidden" name="movie_cast" value="{{ watched_cast }}">
+              <input type="hidden" name="movie_genres" value="{{ watched_genres }}">
+              <input type="hidden" name="movie_runtime" value="{{ watched_runtime }}">
+              <input type="hidden" name="movie_release_date" value="{{ watched_release_date }}">
+              <input type="hidden" name="watched" value="">
+              <button type="submit"><img src="{{ url_for('static', filename='icons/info_icons/not_watched.svg')}}" alt=""><span>Add to Watched</span></button>
+            </form>
+
+        {% endif %}
+
+
+        <!-- Check if current movie is in saved_movies -->
+        {% if saved_movies %}
+
+          {% if movie_details['id'] in saved_movies %}
+
+            <img id="saved-icon" src="{{ url_for('static', filename='icons/info_icons/bookmark_saved.svg')}}" alt="">
+            
+          {% else %}
+
+            <form class="save_form" method='POST'>
+              <input type="hidden" name="movie_id" value="{{ movie_details['id']}}">
+              <input type="hidden" name="movie_title" value="{{ movie_details['title']}}">
+              <input type="hidden" name="poster_path" value="{{ movie_details['poster_path']}}">
+              <input type="hidden" name="save" value="">
+              <button type="submit"><img src="{{ url_for('static', filename='icons/info_icons/add_bookmark.svg')}}" alt=""><span>Add to Saved</span></button>
+            </form>
+
+          {% endif %}
+
+        {% else %}
+
+            <form class="save_form" method='POST'>
+              <input type="hidden" name="movie_id" value="{{ movie_details['id']}}">
+              <input type="hidden" name="movie_title" value="{{ movie_details['title']}}">
+              <input type="hidden" name="poster_path" value="{{ movie_details['poster_path']}}">
+              <input type="hidden" name="save" value="">
+              <button type="submit"><img src="{{ url_for('static', filename='icons/info_icons/add_bookmark.svg')}}" alt=""><span>Add to Saved</span></button>
+            </form>
+
+        {% endif %}
+
+        {% if rated_movies %}
+          {% if movie_details['id'] in rated_movies %}
+
+            <img id="rated-icon" src="{{ url_for('static', filename='icons/info_icons/star.svg')}}" alt="">
+
+          {% else %}
+
+          <div id="modal-open-btn-wrapper">
+          <img id="modal-open-btn" src="{{ url_for('static', filename='icons/info_icons/star.svg')}}" alt="">
+          <span>Rate Movie</span>
+          </div>
+
+          {% endif %}
+        {% else %}
+          <div id="modal-open-btn-wrapper">
+          <img id="modal-open-btn" src="{{ url_for('static', filename='icons/info_icons/star.svg')}}" alt="">
+          <span>Rate Movie</span>
+          </div>
+        {% endif %}
+      
+
+        
+      </div>
+
+    </div>
+
+    
+    
+
+    <div id="info-wrapper">
+      <h1 id="info-title"> {{ movie_details['title'] }} ({{ movie_details['release_date'][:4] }})</h1>
+      
+      <p id="directors"> Directed by  <span>{{ directed_by }}</span></p>
+
+      <div>
+        <span id="genres">
+          {% for genre in movie_details['genres'] %}
+            {% if genre == movie_details['genres'][-1] %}
+              <span>{{ genre['name'] }}</span>
+            {% else %}
+             <span>{{ genre['name'] }},</span>
+            {% endif %}
+          {% endfor %}
+        </span>
+      
+        {% if movie_details['runtime'] %}
+          <span id="runtime">| {{ runtime }}</span>
+        {% endif %}
+        {% if average_rating %}
+        <p id="average-user-rating" >Average User Rating: <img class="user-rating-icon" src="{{ url_for('static', filename='icons/rating_icons/rating_' + average_rating|string + '.svg')}}" alt=""><span>{{ rating_descriptions[average_rating|string] }}</span></p>
+        {% endif %}
+
+        {% if user_rating %}
+        <p id="user-rating" >Your Rating: <img class="user-rating-icon" src="{{ url_for('static', filename='icons/rating_icons/rating_' + user_rating|string + '.svg')}}" alt="">
+        <span>{{ rating_descriptions[user_rating|string] }}</span>
+        <span id="edit-modal-open-btn">Edit<img src="{{ url_for('static', filename='icons/edit.svg')}}" alt=""></span>
+        </p>
+        {% endif %}
+
+      </div>
+
+      
+
+
+
+
+
+    </div>
+  
+
+  </div>
+
+  
+
+  <!-- Pop-up Modal for Rating Movie -->
+  <div id="modal-container">
+    <div id="modal-content">
+
+      <img id="modal-close-btn" src="{{ url_for('static', filename='icons/cancel.svg')}}" alt="">
+      <form method='POST'>
+        <input type="hidden" name="movie_id" value="{{ movie_details['id']}}">
+        <input type="hidden" name="movie_title" value="{{ movie_details['title']}}">
+        <input type="hidden" name="poster_path" value="{{ movie_details['poster_path']}}">
+        <input type="hidden" name="movie_directors" value="{{ directed_by }}">
+        <input type="hidden" name="movie_cast" value="{{ watched_cast }}">
+        <input type="hidden" name="movie_genres" value="{{ watched_genres }}">
+        <input type="hidden" name="movie_runtime" value="{{ watched_runtime }}">
+        <input type="hidden" name="movie_release_date" value="{{ watched_release_date }}">
+        <input type="hidden" name="rate" value="">
+          <p>How would you rate this movie?</p>
+          <div class="rating-scores">
+
+            <label for="rating_1">
+              <input type="radio" name="score" id="rating_1" value="1">
+              <img src="{{ url_for('static', filename='icons/rating_icons/rating_1.svg')}}" alt="">
+              <span>Hated it</span>
+            </label>
+            <label for="rating_2">
+              <input type="radio" name="score" id="rating_2" value="2">
+              <img src="{{ url_for('static', filename='icons/rating_icons/rating_2.svg')}}" alt="">
+              <span>Not for Me</span>
+            </label>
+            <label for="rating_3">
+              <input type="radio" name="score" id="rating_3" value="3">
+              <img src="{{ url_for('static', filename='icons/rating_icons/rating_3.svg')}}" alt="">
+              <span>Watchable</span>
+            </label>
+            <label for="rating_4">
+              <input type="radio" name="score" id="rating_4" value="4">
+              <img src="{{ url_for('static', filename='icons/rating_icons/rating_4.svg')}}" alt="">
+              <span>Liked it</span>
+            </label>
+            <label for="rating_5">
+              <input type="radio" name="score" id="rating_5" value="5">
+              <img src="{{ url_for('static', filename='icons/rating_icons/rating_5.svg')}}" alt="">
+              <span>Loved it</span>
+            </label>
+
+          </div>
+          <p>What did you like about the movie? (optional)</p>
+          <div class="rating-liked">
+
+            <label for="acting">
+              <input type="checkbox" name="liked" id="acting" value="acting">
+              <span>Acting</span>
+            </label>
+            <label for="directing">
+              <input type="checkbox" name="liked" id="directing" value="directing">
+              <span>Directing</span>
+            </label>
+            <label for="theme">
+              <input type="checkbox" name="liked" id="theme" value="theme">
+              <span>Theme</span>
+            </label>
+            <label for="genre">
+              <input type="checkbox" name="liked" id="genre" value="genre">
+              <span>Genre(s)</span>
+            </label>
+            <label for="cinematography">
+              <input type="checkbox" name="liked" id="cinematography" value="cinematography">
+              <span>Cinematography</span>
+            </label>
+            <label for="writing">
+              <input type="checkbox" name="liked" id="writing" value="writing">
+              <span>Writing</span>
+            </label>
+            <label for="sound">
+              <input type="checkbox" name="liked" id="sound" value="sound">
+              <span>Sound</span>
+            </label>
+
+            
+
+          </div>
+          <input type="submit" value="Submit">
+      </form>
+    </div>
+  </div>
+
+
+  <!-- Pop up Modal for Editing Rating -->
+  <div id="edit-modal-container">
+    <div id="edit-modal-content">
+
+      <img id="edit-modal-close-btn" src="{{ url_for('static', filename='icons/cancel.svg')}}" alt="">
+      <form method='POST'>
+        <input type="hidden" name="movie_id" value="{{ movie_details['id']}}">
+        <input type="hidden" name="edit-rating" value="">
+          <p>How would you rate this movie?</p>
+          <div class="rating-scores">
+
+            <label for="edit_rating_1">
+              <input type="radio" name="score" id="edit_rating_1" value="1">
+              <img src="{{ url_for('static', filename='icons/rating_icons/rating_1.svg')}}" alt="">
+              <span>Hated it</span>
+            </label>
+            <label for="edit_rating_2">
+              <input type="radio" name="score" id="edit_rating_2" value="2">
+              <img src="{{ url_for('static', filename='icons/rating_icons/rating_2.svg')}}" alt="">
+              <span>Not for Me</span>
+            </label>
+            <label for="edit_rating_3">
+              <input type="radio" name="score" id="edit_rating_3" value="3">
+              <img src="{{ url_for('static', filename='icons/rating_icons/rating_3.svg')}}" alt="">
+              <span>Watchable</span>
+            </label>
+            <label for="edit_rating_4">
+              <input type="radio" name="score" id="edit_rating_4" value="4">
+              <img src="{{ url_for('static', filename='icons/rating_icons/rating_4.svg')}}" alt="">
+              <span>Liked it</span>
+            </label>
+            <label for="edit_rating_5">
+              <input type="radio" name="score" id="edit_rating_5" value="5">
+              <img src="{{ url_for('static', filename='icons/rating_icons/rating_5.svg')}}" alt="">
+              <span>Loved it</span>
+            </label>
+
+          </div>
+          <p>What did you like about the movie? (optional)</p>
+          <div class="rating-liked">
+
+            <label for="edit_acting">
+              <input type="checkbox" name="liked" id="edit_acting" value="acting">
+              <span>Acting</span>
+            </label>
+            <label for="edit_directing">
+              <input type="checkbox" name="liked" id="edit_directing" value="directing">
+              <span>Directing</span>
+            </label>
+            <label for="edit_theme">
+              <input type="checkbox" name="liked" id="edit_theme" value="theme">
+              <span>Theme</span>
+            </label>
+            <label for="edit_genre">
+              <input type="checkbox" name="liked" id="edit_genre" value="genre">
+              <span>Genre(s)</span>
+            </label>
+            <label for="edit_cinematography">
+              <input type="checkbox" name="liked" id="edit_cinematography" value="cinematography">
+              <span>Cinematography</span>
+            </label>
+            <label for="edit_writing">
+              <input type="checkbox" name="liked" id="edit_writing" value="writing">
+              <span>Writing</span>
+            </label>
+            <label for="edit_sound">
+              <input type="checkbox" name="liked" id="edit_sound" value="sound">
+              <span>Sound</span>
+            </label>
+
+          </div>
+          <input type="submit" value="Submit">
+      </form>
+    </div>
+  </div>
+
+
+  
+  <div id="plot-wrapper">
+    <h1>Plot</h1>
+  <p id="overview">{{ movie_details['overview'] }}</p>
+  </div>
+  
+
+  <div id="cast-wrapper">
+    <h1>Cast</h1>
+    <div id="actor-gallery">
+      {% for actor in movie_info_cast %}
+      <div class="actor-container">
+        {% if actor['profile_path'] %}
+        <img class="profile-picture" src="https://image.tmdb.org/t/p/original{{ actor['profile_path'] }}" alt="">
+        {% else %}
+        <div class="no-profile-path"><img src="{{ url_for('static', filename='icons/no_image.svg')}}" alt=""></div>
+        {% endif %}
+        <p class="actor-name">{{ actor['name'] }}</p>
+        <p class="actor-character">{{ actor['character'] }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  <!-- If the current movie belongs to a collection -->
+  {% if movie_collection %}
+
+  <h1 id="collection-heading">Belongs to the {{ collection_title }}</h1>
+
+  <div id="collection-gallery">
+
+    {% for movie in movie_collection %}
+
+    {% if movie['id'] != movie_details['id'] and movie['poster_path'] %}
+    <a href="{{ url_for('movie_info', movie_id = movie['id'])}}">
+      <div class="collection-poster-container">
+        <img loading="lazy" class="collection-poster" src="https://image.tmdb.org/t/p/original{{ movie['poster_path'] }}" alt="">
+      </div>
+    </a>
+    {% endif %}
+
+    {% endfor %}
+
+  </div>
+
+  {% endif %}
+
+<!-- If there are recommendations for the current movie -->
+  {% if movie_recommendations %}
+
+  <h1 id="recommendations-heading">You may also like...</h1>
+
+  <div id="recommendations-gallery">
+
+    {% for movie in movie_recommendations %}
+
+    {% if movie['id'] != movie_details['id'] and movie['poster_path'] and movie['id'] not in watched_movies %}
+    <a href="{{ url_for('movie_info', movie_id = movie['id'])}}">
+      <div class="recommendation-poster-container">
+        <img loading="lazy" class="recommendation-poster" src="https://image.tmdb.org/t/p/original{{ movie['poster_path'] }}" alt="">
+      </div>
+    </a>
+    {% endif %}
+
+    {% endfor %}
+
+  </div>
+
+  {% endif %}
+  
+
+  {% if user_rating %}
+<script>
+  // Edit Rating Modal
+
+  const editModal = document.getElementById('edit-modal-container');
+  const editOpenModalBtn = document.getElementById('edit-modal-open-btn');
+  const editCloseModalBtn = document.getElementById('edit-modal-close-btn');
+    
+  editOpenModalBtn.addEventListener('click', editOpenModal);
+    function editOpenModal(){
+      editModal.style.display = 'flex';
+  }
+
+    editCloseModalBtn.addEventListener('click', editCloseModal);
+    function editCloseModal(){
+      editModal.style.display = 'none';
+    }
+
+    window.addEventListener('click', clickOutsideEditModal);
+
+    function clickOutsideEditModal(e){
+      if(e.target == editModal){
+        editModal.style.display = 'none';
+      }
+    }
+
+</script>
+
+{% else %}
+  <script>
+
+
+    // Rating Modal
+    const modal = document.getElementById('modal-container');
+    const openModalBtn = document.getElementById('modal-open-btn');
+    const closeModalBtn = document.getElementById('modal-close-btn');
+    
+    openModalBtn.addEventListener('click', openModal);
+    function openModal(){
+      modal.style.display = 'flex';
+    }
+
+    closeModalBtn.addEventListener('click', closeModal);
+    function closeModal(){
+      modal.style.display = 'none';
+    }
+
+    window.addEventListener('click', clickOutsideModal);
+
+    function clickOutsideModal(e){
+      if(e.target == modal){
+        modal.style.display = 'none';
+      }
+    }
+    
+  </script>
+
+  {% endif %}
+
+{% endblock %}

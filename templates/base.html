@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.1.0/chart.min.js"></script>
+  <title>MooviHub | {{ title }}</title>
+</head>
+
+<body>
+  <div class="navbar" id="navbar">
+      <nav class="nav">
+          <div>
+              <div class="nav-header">
+                  <span id="menu"></span>
+                  <img id="nav-logo" src="{{ url_for('static', filename='icons/logo_white.svg')}}" alt="">
+              </div>
+
+              <div id="user-info">
+
+                <span id="avatar">{{session['USERNAME'][0]}}</span>
+                <span id="username" >{{session['USERNAME']}}</span>
+
+              </div>
+              <div class="nav__list">
+
+                  <a href="{{ url_for('home') }}" class="nav-link {{ 'active' if active_page == 'home'}}">
+                      <img class="nav-icon" src="{{ url_for('static', filename='icons/nav_icons/home.svg')}}" alt="">
+                      <span class="nav-text">Home</span>
+                  </a>
+                  <a href="{{ url_for('search')}}" class="nav-link {{ 'active' if active_page == 'search'}}">
+                    <img class="nav-icon" src="{{ url_for('static', filename='icons/nav_icons/search.svg')}}" alt="">
+                      <span class="nav-text">Search</span>
+                  </a>
+
+                  <a href="{{ url_for('my_stats') }}" class="nav-link {{ 'active' if active_page == 'stats'}}">
+                    <img class="nav-icon" src="{{ url_for('static', filename='icons/nav_icons/stats.svg')}}" alt="">
+                      <span class="nav-text">My Stats</span>
+                  </a>
+                  
+                  <a href="{{ url_for('watched')}}" class="nav-link {{ 'active' if active_page == 'watched'}}" >
+                    <img class="nav-icon" src="{{ url_for('static', filename='icons/nav_icons/watched.svg')}}" alt="">
+                      <span class="nav-text">Watched</span>
+                  </a>
+
+                  <a href="{{ url_for('saved')}}" class="nav-link {{ 'active' if active_page == 'saved'}}">
+                    <img class="nav-icon" src="{{ url_for('static', filename='icons/nav_icons/saved.svg')}}" alt="">
+                      <span class="nav-text">Saved</span>
+                  </a>
+
+                  <a href="{{ url_for('recommendations')}}" class="nav-link {{ 'active' if active_page == 'recommendations'}}">
+                    <img class="nav-icon" src="{{ url_for('static', filename='icons/nav_icons/recommendations.svg')}}" alt="">
+                      <span class="nav-text">Recommendations</span>
+                  </a>
+              </div>
+          </div>
+
+          <a href="{{url_for('logout')}}" class="nav-link">
+              <img class="nav-icon" src="{{ url_for('static', filename='icons/nav_icons/logout.svg')}}" alt="">
+              <span class="nav-text">Logout</span>
+          </a>
+      </nav>
+  </div>
+
+  <div id="content-wrapper">
+ 
+  {% block content%}
+
+  
+
+  {% endblock %}
+  
+  <div id="back-to-top"><img src="{{ url_for('static', filename='/icons/up_chevron.svg') }}" alt=""></div>
+  </div>
+  
+  
+
+</body>
+
+  
+  
+
+  
+  
+  <script>
+  const showMenu = (toggleId, navbarId, contentId)=>{
+  const toggle = document.getElementById(toggleId),
+  navbar = document.getElementById(navbarId),
+  content = document.getElementById(contentId)
+
+  if(toggle && navbar){
+    toggle.addEventListener('click', ()=>{
+      navbar.classList.toggle('expander');
+      content.classList.toggle('pushed');
+      menu.classList.toggle('close-icon');
+
+      
+    })
+  }
+}
+
+showMenu('menu','navbar', 'content-wrapper');
+
+
+// Back to Top: 
+
+
+const backtoTop = document.querySelector('#back-to-top');
+
+window.addEventListener('scroll', () => {
+if (window.pageYOffset > 1100) {
+backtoTop.classList.add('active');
+} else {
+backtoTop.classList.remove('active');
+}
+});
+
+backtoTop.addEventListener('click', () => {
+  document.documentElement.scrollTop = 0;
+});
+
+
+
+
+</script>
+
+
+
+</body>
+</html>

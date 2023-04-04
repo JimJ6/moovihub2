@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% set title = "Search for Movies" %}
+{% set active_page = "search" %}
+{% set selected_page = "search" %}
+
+{% block content %}
+
+  <div id="search-header-links">
+    <a href="{{ url_for('search')}}" class="search-header-link {{ 'selected' if selected_page == 'search' }}">Search by Title</a>
+    <a href="{{ url_for('advanced_search')}}" class="search-header-link {{ 'selected' if selected_page == 'advanced search' }}">Advanced Search</a>
+  </div>
+  <h1 class="page-heading">Search by Movie Title</h1>
+  
+  <form method="POST">
+    <div id="searchbar-container">
+  
+      <input type="search" name="search" id="search" placeholder="Search by Movie Title">
+      <button id="search-btn" type="submit"><img src="{{ url_for('static', filename='icons/nav_icons/search.svg')}}" alt=""></button>
+    
+  </div>
+</form>
+
+{% if error_message %}
+
+  <h1 id="search-results-header">Hmmm, you didn't enter a movie title!</h1>
+
+
+{% elif movies %}
+
+  <h1 id="search-results-header">We found {{ total_movies }} movie {% if total_movies == 1 %} result {% else %} results {% endif %}  for '{{ query }}'</h1>
+
+{% elif no_results %}
+
+  <h1 id="search-results-header">Sorry, we couldn't find any movie results for '{{ query }}'</h1>
+
+
+{% endif %}
+
+
+  <div class="movie-gallery">
+
+    {% for movie in movies %}
+    
+      {% if movie['poster_path'] %}
+        <a href="{{ url_for('movie_info', movie_id = movie['id'])}}">
+          <div class="poster-container">
+            <img loading="lazy" class="poster" src="https://image.tmdb.org/t/p/original{{ movie['poster_path'] }}" alt="">
+          </div>
+        
+      {% endif %}
+
+    {% endfor %}
+
+  </div>
+
+{% endblock %}

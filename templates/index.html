@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css')}}"
+    />
+    <title>MooviHub | Welcome</title>
+  </head>
+  <body>
+    <div id="hero-container">
+      <header id="index-header">
+        <div id="navbar">
+          <img
+            id="index-logo"
+            src="{{ url_for('static', filename='icons/logo_white.svg')}}"
+            alt=""
+          />
+          <ul id="index-links">
+            <li id="sign-up-link" class="index-link">Sign Up</li>
+          </ul>
+        </div>
+      </header>
+
+      <div id="login-wrapper">
+        <h1>Welcome to MooviHub</h1>
+        <!-- <img id="welcome-icon" src="{{ url_for('static', filename='icons/logo_icon.svg')}}" alt=""> -->
+        <p id="welcome-message">
+          MooviHub is a web platform that allows you catalogue and rate movies,
+          discover new ones and receive personalised recommendations!
+        </p>
+        {% if session['FORM_NAME'] == "login" %} {% with messages =
+        get_flashed_messages(with_categories=true) %} {% if messages %} {% for
+        category, message in messages %}
+
+        <div class=" message {{ category }}">
+          <p>
+            <img
+              src="{{ url_for('static', filename='/icons/' + category + '.svg') }}"
+              alt=""
+            />{{ message }}
+          </p>
+          <img
+            onclick="this.parentElement.style.display='none'"
+            class="close-button"
+            src="{{ url_for('static', filename='/icons/cancel.svg') }}"
+            alt=""
+          />
+        </div>
+        {% endfor %} {% endif %} {% endwith %} {% endif %}
+
+        <form method="POST">
+          <label for="username">
+            <img
+              src="{{ url_for('static', filename='icons/username.svg') }}"
+              alt=""
+            />
+            <input
+              type="text"
+              name="username"
+              id="username"
+              placeholder="Username"
+            />
+          </label>
+
+          <label for="password">
+            <img
+              src="{{ url_for('static', filename='icons/password.svg') }}"
+              alt=""
+            />
+            <input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Password"
+            />
+          </label>
+
+          <input type="submit" value="Login" />
+        </form>
+
+        <p id="no-account">
+          Don't have an account? <span id="sign-up-scroll">Sign up!</span>
+        </p>
+      </div>
+    </div>
+
+    <div id="sign-up-container">
+      <div id="sign-up-form"></div>
+      <div id="sign-up-wrapper">
+        <h1>Create an Account</h1>
+        {% if session['FORM_NAME'] == "signup" %} {% with messages =
+        get_flashed_messages(with_categories=true) %} {% if messages %} {% for
+        category, message in messages %}
+
+        <div class=" message {{ category }}">
+          <p>
+            <img
+              src="{{ url_for('static', filename='/icons/' + category + '.svg') }}"
+              alt=""
+            />{{ message }}
+          </p>
+          <img
+            onclick="this.parentElement.style.display='none'"
+            class="close-button"
+            src="{{ url_for('static', filename='/icons/cancel.svg') }}"
+            alt=""
+          />
+        </div>
+        {% endfor %} {% endif %} {% endwith %} {% endif %}
+
+        <form method="POST">
+          <label for="signup-username">
+            <img
+              src="{{ url_for('static', filename='icons/username.svg') }}"
+              alt=""
+            />
+            <input
+              type="text"
+              name="username"
+              id="signup-username"
+              placeholder="Username"
+            />
+          </label>
+
+          <label id="sign-up-password" for="signup-password">
+            <img
+              src="{{ url_for('static', filename='icons/password.svg') }}"
+              alt=""
+            />
+            <input
+              type="password"
+              name="password"
+              id="signup-password"
+              placeholder="Password"
+            />
+            <p id="password-tip">
+              Password should contain at least one uppercase letter and digit!
+            </p>
+          </label>
+
+          <label for="confirm-password">
+            <img
+              src="{{ url_for('static', filename='icons/password_confirm.svg') }}"
+              alt=""
+            />
+            <input
+              type="password"
+              name="password confirm"
+              id="confirm-password"
+              placeholder="Confirm Password"
+            />
+          </label>
+
+          <input type="submit" value="Sign Up" />
+        </form>
+      </div>
+    </div>
+
+    {% include 'footer.html' %} {% if session['FORM_NAME'] == "signup" %}
+    <script>
+      const signupForm = document.getElementById("sign-up-form");
+      signupForm.scrollIntoView();
+    </script>
+    {% endif %}
+
+    <script>
+      // Sign Up Link Scroll Function
+      const signupLink = document.getElementById("sign-up-link");
+      const signupLink2 = document.getElementById("sign-up-scroll");
+      const signupForm2 = document.getElementById("sign-up-form");
+
+      signupLink.addEventListener("click", () => {
+        signupForm2.scrollIntoView();
+      });
+
+      signupLink2.addEventListener("click", () => {
+        signupForm2.scrollIntoView();
+      });
+
+      // close icon on flash messages
+
+      closeButton.addEventListener("click", function () {
+        document.querySelector(".message").style.display = "none";
+      });
+    </script>
+  </body>
+</html>
